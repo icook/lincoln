@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+$(function(){
+  var Block = can.Model.extend({
+    findAll: 'GET /api/block',
+    findOne: 'GET /api/block/{id}',
+  }, {});
+
+  can.Component.extend({
+    tag: 'todo-app',
+    scope: {
+      blocks: new Block.List({}),
+    }
+  })
+});
+$("#content").html(can.view("appMustache", { }))
+</script>
+<div id="content">
+</div>
+<script id='appMustache' type='text/mustache'>
+  <todo-app>
+    {% raw %}{{=<% %>=}}{% endraw %}
+    <h2>Current blocks</h2>
+    <% #each blocks %>
+      <% hash %>
+    <%/each%>
+  </todo-app>
+</script>
+{% endblock %}
