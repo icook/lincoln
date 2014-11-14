@@ -1,10 +1,6 @@
-from flask import (current_app, request, render_template, Blueprint, abort, flash,
-                   jsonify, g, session, Response)
+from flask import render_template, Blueprint, jsonify
 
-import rethinkdb
-import json
-
-from . import r, redis, db
+from . import db
 
 main = Blueprint('main', __name__)
 

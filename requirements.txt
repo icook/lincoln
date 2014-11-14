@@ -1,8 +1,6 @@
-git+https://github.com/icook/python-bitcoinrpc.git
-git+https://github.com/icook/cryptokit
 Flask==0.10.1
-Flask-Cache==0.12
 Flask-Script==0.6.6
+Flask-SQLAlchemy==1.0
 Jinja2==2.7.2
 Mako==0.9.1
 MarkupSafe==0.19
@@ -15,9 +13,4 @@ gunicorn==18.0
 itsdangerous==0.24
 lever==0.2.6
 psycopg2==2.5.2
-redis==2.9.1
-requests==2.2.1
-rethinkdb
-flask-redis
-flask-rethinkdb
-gevent
+python-bitcoinlib==0.2.1
