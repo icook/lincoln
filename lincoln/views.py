@@ -14,7 +14,11 @@ main = Blueprint('main', __name__)
 @main.route('/address/<address>')
 def address(address):
     pubkey_hash = base58.decode(address)
-    outputs = m.Output.query.filter_by(dest_address=pubkey_hash[1:-4])
+    # Strip off the version and checksum, database doesn't store them
+    pubkey_hash = pubkey_hash[1:-4]
+    outputs = (m.Output.query.options(db.joinedload('spent_tx'),
+                                      db.joinedload('origin_tx')).
+               filter_by(dest_address=pubkey_hash))
     return render_template('address.html', outputs=outputs, address=address)
 
 
