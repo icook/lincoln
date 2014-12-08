@@ -8,6 +8,7 @@ from flask import Flask, current_app
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.local import LocalProxy
 from bitcoin.rpc import Proxy
+from redis import Redis
 
 import lincoln.filters as filters
 
@@ -16,6 +17,8 @@ db = SQLAlchemy()
 
 coinserv = LocalProxy(
     lambda: getattr(current_app, 'rpc_connection', None))
+redis_conn = LocalProxy(
+    lambda: getattr(current_app, 'redis', None))
 
 
 def create_app(log_level="INFO", config="config.yml"):
@@ -28,6 +31,15 @@ def create_app(log_level="INFO", config="config.yml"):
     # inject all the yaml configs
     app.config.update(config_vars)
     db.init_app(app)
+
+    # Setup redis
+    redis_config = app.config.get('redis_conn', dict(type='live'))
+    typ = redis_config.pop('type')
+    if typ == "mock_redis":
+        from mockredis import mock_redis_client
+        app.redis = mock_redis_client()
+    else:
+        app.redis = Redis(**redis_config)
 
     del app.logger.handlers[0]
     app.logger.setLevel(logging.NOTSET)
