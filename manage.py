@@ -23,29 +23,8 @@ def init_db():
 
 @manager.command
 def sync():
-    # Get the current network info from the rpc server
-    #curr_height = coinserv.getinfo()['blocks']
-    #curr_hash = coinserv.getblockhash(curr_height)
-
     # Info about height from current database
     highest = Block.query.order_by(Block.height.desc()).first()
-
-    #if not highest:
-    #    common_ancestor = 0
-    #else:
-    #    # Find the last block shared between the servers
-    #    while True:
-    #        common_ancestor = Block.query.filter_by(hash=curr_hash).first()
-    #        if common_ancestor:
-    #            break
-    #        current_app.logger.info(
-    #            "Didn't find common ancestor at height {}, hsh {}"
-    #            .format(curr_height, curr_hash))
-    #        curr_height -= 1
-    #        curr_hash = coinserv.getblockhash(curr_height)
-
-    #current_app.logger.info(
-    #    "Found common ancestor at {}".format(common_ancestor))
 
     while True:
         if not highest:
