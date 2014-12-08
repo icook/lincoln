@@ -6,7 +6,6 @@ import inspect
 
 from flask import Flask, current_app, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.rethinkdb import RethinkDB
 from werkzeug.local import LocalProxy
 from bitcoin.rpc import Proxy
 
@@ -15,7 +14,6 @@ import lincoln.filters as filters
 root = os.path.abspath(os.path.dirname(__file__) + '/../')
 db = SQLAlchemy()
 
-r = RethinkDB()
 coinserv = LocalProxy(
     lambda: getattr(current_app, 'rpc_connection', None))
 
@@ -25,7 +23,6 @@ def create_app(log_level="INFO", config="config.yml"):
     app.debug = True
     app.secret_key = 'test'
     app.config.from_object(__name__)
-    r.init_app(app)
 
     config_vars = yaml.load(open(root + '/config.yml'))
     # inject all the yaml configs

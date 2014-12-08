@@ -2,7 +2,6 @@
 *.yml
 *.sqlite
 *.log
-rethinkdb_data
 
 *.py[cod]
 *.swp
