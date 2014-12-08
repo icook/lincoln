@@ -68,5 +68,6 @@ def comma(value):
 def currency(value):
     return "{:,.8f}".format(float(value))
 
+
 def bytes(val):
     return core.b2lx(val)

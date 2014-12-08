@@ -6,7 +6,6 @@ from lincoln import create_app, db, coinserv
 from lincoln.models import Block, Transaction, Output
 
 import bitcoin.core.script as op
-import bitcoin.core as core
 import bitcoin.core.serialize as serialize
 
 import datetime

@@ -1,6 +1,6 @@
 import os
 
-from flask import render_template, Blueprint, jsonify, send_from_directory, current_app
+from flask import render_template, Blueprint, send_from_directory
 
 import bitcoin.core as core
 import bitcoin.base58 as base58
@@ -49,5 +49,6 @@ def blocks():
 
 @main.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(root, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(
+        os.path.join(root, 'static'),
+        'favicon.ico', mimetype='image/vnd.microsoft.icon')

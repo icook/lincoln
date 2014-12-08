@@ -4,7 +4,7 @@ import yaml
 import logging
 import inspect
 
-from flask import Flask, current_app, url_for
+from flask import Flask, current_app
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.local import LocalProxy
 from bitcoin.rpc import Proxy

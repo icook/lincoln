@@ -1,5 +1,4 @@
 import calendar
-import datetime
 import bitcoin.core as core
 import bitcoin.base58 as base58
 
