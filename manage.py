@@ -63,6 +63,8 @@ def sync():
                           difficulty=block.difficulty,
                           algo=current_app.config['algo']['display'],
                           currency=current_app.config['currency']['code'])
+        current_app.logger.info(
+            "Syncing block {}".format(block_obj))
         db.session.add(block_obj)
 
         # all TX's in block are connectable; index
@@ -74,14 +76,6 @@ def sync():
 
             total_out = Decimal(0)
             total_in = Decimal(0)
-
-            if not tx.is_coinbase():
-                for txin in tx.vin:
-                    obj = Output.query.filter_by(
-                        origin_tx_hash=txin.prevout.hash,
-                        index=txin.prevout.n).one()
-                    obj.spend_tx = tx_obj
-                    total_in += obj.amount
 
             for i, txout in enumerate(tx.vout):
                 out_dec = Decimal(txout.nValue) / 100000000
@@ -109,11 +103,18 @@ def sync():
                              amount=out_dec,
                              dest_address=address)
                 db.session.add(out)
+            db.session.flush()
+
+            if not tx.is_coinbase():
+                for txin in tx.vin:
+                    obj = Output.query.filter_by(
+                        origin_tx_hash=txin.prevout.hash,
+                        index=txin.prevout.n).one()
+                    obj.spend_tx = tx_obj
+                    total_in += obj.amount
 
         highest = block_obj
         db.session.commit()
-        current_app.logger.info(
-            "Synced block {}".format(block_obj))
 
 
 manager.add_option('-c', '--config', default='/config.yml')
