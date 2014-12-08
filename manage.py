@@ -5,6 +5,10 @@ from decimal import Decimal
 from lincoln import create_app, db, coinserv
 from lincoln.models import Block, Transaction, Output
 
+import bitcoin.core.script as op
+import bitcoin.core as core
+import bitcoin.core.serialize as serialize
+
 import datetime
 
 manager = Manager(create_app)
@@ -84,10 +88,26 @@ def sync():
                 block_obj.total_value += out_dec
                 total_out += out_dec
 
+                # Sloppy as hell destination address checking
+                # ------------------------------------------------
+                scr = list(txout.scriptPubKey)
+                # pay-to-pubkey-hash
+                address = None
+                if (scr[0] == op.OP_DUP and
+                        scr[1] == op.OP_HASH160 and
+                        scr[3] == op.OP_EQUALVERIFY and
+                        scr[4] == op.OP_CHECKSIG):
+                    address = scr[2]
+                elif scr[1] == op.OP_CHECKSIG:
+                    address = serialize.Hash160(scr[0])
+                else:
+                    current_app.logger.info("Unrecognized script {}"
+                                            .format(scr))
+
                 out = Output(origin_tx=tx_obj,
                              index=i,
                              amount=out_dec,
-                             dest_address="")
+                             dest_address=address)
                 db.session.add(out)
 
         highest = block_obj

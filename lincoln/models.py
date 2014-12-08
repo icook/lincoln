@@ -1,7 +1,9 @@
 import calendar
 import datetime
-
 import bitcoin.core as core
+import bitcoin.base58 as base58
+
+from flask import current_app
 
 from .model_lib import base
 from . import db
@@ -12,7 +14,7 @@ class Block(base):
     # An id value to make foreign keys more compact
     id = db.Column(db.Integer, primary_key=True)
     # the hash of the block
-    hash = db.Column(db.String(64), unique=True)
+    hash = db.Column(db.LargeBinary(64), unique=True)
     height = db.Column(db.Integer, nullable=False)
     # When block was found
     #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
@@ -45,7 +47,7 @@ class Block(base):
 
 class Transaction(base):
     id = db.Column(db.Integer, primary_key=True)
-    txid = db.Column(db.String(64), unique=True)
+    txid = db.Column(db.LargeBinary(64), unique=True)
     #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     network_fee = db.Column(db.Numeric)
     # Points to the main chain block that it's in, or null if in mempool
@@ -67,7 +69,7 @@ class Transaction(base):
 
 class Output(base):
     # Where this Output was created at
-    origin_tx_hash = db.Column(db.String(64), db.ForeignKey('transaction.txid'), primary_key=True)
+    origin_tx_hash = db.Column(db.LargeBinary(64), db.ForeignKey('transaction.txid'), primary_key=True)
     origin_tx = db.relationship('Transaction', foreign_keys=[origin_tx_hash],
                                 backref='origin_txs')
 
@@ -78,12 +80,21 @@ class Output(base):
     #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # Who get's to spend it? Will be null for unusual tx types
-    dest_address = db.Column(db.String(64))
+    dest_address = db.Column(db.LargeBinary)
 
     # Point to the tx we spent this output in, or null if UTXO
     spend_tx_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
     spent_tx = db.relationship('Transaction', foreign_keys=[spend_tx_id],
                                backref='spent_txs')
+
+    @property
+    def address_str(self):
+        if self.dest_address:
+            return base58.CBase58Data.from_bytes(
+                self.dest_address,
+                nVersion=current_app.config['currency']['address_version'][0])
+        else:
+            return "Unknown TX Type"
 
     @property
     def url_for(self):

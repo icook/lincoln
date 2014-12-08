@@ -82,6 +82,7 @@
       <tr>
         <th>Index</th>
         <th>Amount</th>
+        <th>Address</th>
         <th>Spent in</th>
       </tr>
     </thead>
@@ -90,6 +91,7 @@
     <tr>
       <td>{{ output.index | comma }}</td>
       <td>{{ output.amount | currency }}</td>
+      <td>{{ output.address_str }}</td>
       <td>
         {% if output.spent_tx %}
         <a href="/transaction/{{ output.spent_tx.hash | bytes }}">{{ output.spent_tx.hash | bytes }}</a>

@@ -18,7 +18,7 @@ def block(hash):
 
 @main.route('/transaction/<hash>')
 def transaction(hash):
-    transaction = m.Transaction.query.filter_by(hash=core.lx(hash)).first()
+    transaction = m.Transaction.query.filter_by(txid=core.lx(hash)).first()
     return render_template('transaction.html', transaction=transaction)
 
 
