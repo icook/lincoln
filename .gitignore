@@ -1,5 +1,6 @@
 *.yml.*
 *.yml
+*.sqlite
 *.log
 rethinkdb_data
 

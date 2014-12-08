@@ -1,0 +1,22 @@
+<div class="table-responsive col-lg-12">
+  <table class="table table-striped table-hover tablesorter blockTable">
+    <thead>
+      <tr>
+        <th>Hash</th>
+        <th>Blockheight</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for transaction in transactions %}
+    <tr>
+      <td><a href="/transaction/{{ transaction.txid | bytes }}">{{ transaction.txid | bytes }}</a></td>
+      <td>{{ '{:,}'.format(transaction.block.height) }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <th colspan="10">No transactions matching that criteria</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

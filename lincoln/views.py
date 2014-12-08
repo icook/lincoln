@@ -13,10 +13,23 @@ main = Blueprint('main', __name__)
 @main.route('/block/<hash>')
 def block(hash):
     block = m.Block.query.filter_by(hash=core.lx(hash)).first()
-    return render_template('blocks.html', block=block)
+    return render_template('block.html', block=block)
+
+
+@main.route('/transaction/<hash>')
+def transaction(hash):
+    transaction = m.Transaction.query.filter_by(hash=core.lx(hash)).first()
+    return render_template('transaction.html', transaction=transaction)
+
+
+@main.route('/transactions')
+def transactions():
+    transactions = m.Transaction.query.order_by(m.Transaction.id.desc()).limit(100)
+    return render_template('transactions.html', transactions=transactions)
 
 
 @main.route('/')
+@main.route('/blocks')
 def blocks():
     blocks = m.Block.query.order_by(m.Block.height.desc()).limit(100)
     return render_template('blocks.html', blocks=blocks)

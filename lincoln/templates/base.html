@@ -42,9 +42,8 @@
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="/">Blocks</a></li>
-            <li><a href="/transactions">Transactions</a></li>
+            <li{% if page == "blocks" %} class="active"{% endif %}><a href="/">Blocks</a></li>
+            <li{% if page == "transactions" %} class="active"{% endif %}><a href="/transactions">Transactions</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

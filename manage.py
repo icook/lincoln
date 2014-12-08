@@ -55,7 +55,7 @@ def sync():
                           ntime=datetime.datetime.utcfromtimestamp(block.nTime),
                           orphan=False,
                           total_value=0.0,
-                          difficulty=0.0,
+                          difficulty=block.difficulty,
                           algo="x11",
                           currency="LTC")
         db.session.add(block_obj)
@@ -68,6 +68,7 @@ def sync():
             current_app.logger.info("Found new tx {}".format(tx))
 
             #for txin in enumerate(tx.vin):
+            #for txout in enumerate(tx.vout):
 
         highest = block_obj
         db.session.commit()
