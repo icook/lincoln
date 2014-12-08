@@ -1,6 +1,8 @@
 import calendar
 import datetime
 
+import bitcoin.core as core
+
 from .model_lib import base
 from . import db
 
@@ -34,7 +36,7 @@ class Block(base):
         return "/block/{}".format(self.hash)
 
     def __str__(self):
-        return "<{} h:{} hsh:{}>".format(self.currency, self.height, self.hash)
+        return "<{} h:{} hsh:{}>".format(self.currency, self.height, core.b2lx(self.hash))
 
 
 class Transaction(base):
@@ -56,7 +58,7 @@ class Transaction(base):
         return calendar.timegm(self.created_at.utctimetuple())
 
     def __str__(self):
-        return "<Transaction h:{}>".format(self.txid)
+        return "<Transaction h:{}>".format(core.b2lx(self.txid))
 
 
 class Output(base):

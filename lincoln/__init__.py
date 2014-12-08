@@ -3,13 +3,13 @@ import sys
 import yaml
 import logging
 
+from flask import Flask, current_app, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask import Flask, current_app
 from flask.ext.rethinkdb import RethinkDB
 from werkzeug.local import LocalProxy
 from bitcoin.rpc import Proxy
 
-ROOT = os.path.abspath(os.path.dirname(__file__) + '/../')
+root = os.path.abspath(os.path.dirname(__file__) + '/../')
 db = SQLAlchemy()
 
 r = RethinkDB()
@@ -24,7 +24,7 @@ def create_app(log_level="INFO", config="config.yml"):
     app.config.from_object(__name__)
     r.init_app(app)
 
-    config_vars = yaml.load(open(ROOT + '/config.yml'))
+    config_vars = yaml.load(open(root + '/config.yml'))
     # inject all the yaml configs
     app.config.update(config_vars)
     db.init_app(app)
