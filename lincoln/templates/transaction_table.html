@@ -4,13 +4,28 @@
       <tr>
         <th>Hash</th>
         <th>Blockheight</th>
+        <th>Total Out</th>
+        <th>Fee Paid</th>
       </tr>
     </thead>
     <tbody>
     {% for transaction in transactions %}
     <tr>
-      <td><a href="/transaction/{{ transaction.txid | bytes }}">{{ transaction.txid | bytes }}</a></td>
+      <td>
+        <a href="/transaction/{{ transaction.txid | bytes }}">{{ transaction.txid | bytes }}</a>
+        {% if transaction.coinbase %}
+          <span class="label label-primary">Coinbase</span>
+        {% endif %}
+      </td>
       <td>{{ '{:,}'.format(transaction.block.height) }}</td>
+      <td>{{ transaction.total_out | currency }}</td>
+      <td>
+        {% if transaction.coinbase %}
+          --
+        {% else %}
+          {{ (transaction.total_in - transaction.total_out) | currency }}
+        {% endif %}
+      </td>
     </tr>
     {% else %}
     <tr>
