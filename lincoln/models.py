@@ -13,7 +13,7 @@ class Block(base):
     hash = db.Column(db.String(64), unique=True)
     height = db.Column(db.Integer, nullable=False)
     # When block was found
-    found_at = db.Column(db.DateTime, nullable=False)
+    #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     # The actual internal timestamp on the block
     ntime = db.Column(db.DateTime, nullable=False)
     # Is block now orphaned?
@@ -40,12 +40,40 @@ class Block(base):
 class Transaction(base):
     id = db.Column(db.Integer, primary_key=True)
     txid = db.Column(db.String(64), unique=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     network_fee = db.Column(db.Numeric)
     # Points to the main chain block that it's in, or null if in mempool
     block_id = db.Column(db.Integer, db.ForeignKey('block.id'))
     block = db.relationship('Block', foreign_keys=[block_id],
                             backref='transactions')
+
+    @property
+    def url_for(self):
+        return "/transaction/{}".format(self.txid)
+
+    @property
+    def timestamp(self):
+        return calendar.timegm(self.created_at.utctimetuple())
+
+    def __str__(self):
+        return "<Transaction h:{}>".format(self.txid)
+
+
+class Output(base):
+    id = db.Column(db.Integer, primary_key=True)
+    txid = db.Column(db.String(64), unique=True)
+    #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    dest_address = db.Column(db.String(64))
+
+    # Point to the tx we spent this output in, or null if UTXO
+    spend_tx_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
+    spent_tx = db.relationship('Transaction', foreign_keys=[spend_tx_id],
+                               backref='spent_txs')
+
+    # Where this Output was created at
+    origin_tx_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
+    origin_tx = db.relationship('Transaction', foreign_keys=[origin_tx_id],
+                                backref='origin_txs')
 
     @property
     def url_for(self):
