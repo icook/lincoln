@@ -65,12 +65,13 @@ def sync():
                 scr = list(txout.scriptPubKey)
                 # pay-to-pubkey-hash
                 address = None
-                if (scr[0] == op.OP_DUP and
+                if (len(scr) == 5 and
+                        scr[0] == op.OP_DUP and
                         scr[1] == op.OP_HASH160 and
                         scr[3] == op.OP_EQUALVERIFY and
                         scr[4] == op.OP_CHECKSIG):
                     address = scr[2]
-                elif scr[1] == op.OP_CHECKSIG:
+                elif len(scr) == 2 and scr[1] == op.OP_CHECKSIG:
                     address = serialize.Hash160(scr[0])
                 else:
                     current_app.logger.info("Unrecognized script {}"
