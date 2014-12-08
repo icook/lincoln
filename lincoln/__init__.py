@@ -2,12 +2,15 @@ import os
 import sys
 import yaml
 import logging
+import inspect
 
 from flask import Flask, current_app, url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.rethinkdb import RethinkDB
 from werkzeug.local import LocalProxy
 from bitcoin.rpc import Proxy
+
+import lincoln.filters as filters
 
 root = os.path.abspath(os.path.dirname(__file__) + '/../')
 db = SQLAlchemy()
@@ -39,6 +42,10 @@ def create_app(log_level="INFO", config="config.yml"):
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(log_format)
     logger.addHandler(handler)
+
+    # Dynamically add all the filters in the filters.py file
+    for name, func in inspect.getmembers(filters, inspect.isfunction):
+        app.jinja_env.filters[name] = func
 
     app.rpc_connection = Proxy(
         "http://{0}:{1}@{2}:{3}/"

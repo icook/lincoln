@@ -2,19 +2,16 @@ import os
 
 from flask import render_template, Blueprint, jsonify, send_from_directory
 
+from . import models as m
 from . import db, root
 
 main = Blueprint('main', __name__)
 
 
 @main.route('/')
-def home():
-    return render_template('home.html')
-
-
-@main.route('/')
 def blocks():
-    return render_template('blocks.html')
+    blocks = m.Block.query.order_by(m.Block.height.desc()).limit(100)
+    return render_template('blocks.html', blocks=blocks)
 
 
 @main.route('/favicon.ico')

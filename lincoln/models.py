@@ -32,6 +32,10 @@ class Block(base):
     algo = db.Column(db.String, nullable=False)
 
     @property
+    def timestamp(self):
+        return calendar.timegm(self.ntime.utctimetuple())
+
+    @property
     def url_for(self):
         return "/block/{}".format(self.hash)
 
