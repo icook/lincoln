@@ -3,7 +3,6 @@ from flask.ext.script import Manager
 
 from lincoln import create_app, db, coinserv
 from lincoln.models import Block, Transaction
-from bitcoin.core import lx
 
 import datetime
 
