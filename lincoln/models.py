@@ -66,20 +66,24 @@ class Transaction(base):
 
 
 class Output(base):
-    id = db.Column(db.Integer, primary_key=True)
-    txid = db.Column(db.String(64), unique=True)
+    # Where this Output was created at
+    origin_tx_hash = db.Column(db.String(64), db.ForeignKey('transaction.txid'), primary_key=True)
+    origin_tx = db.relationship('Transaction', foreign_keys=[origin_tx_hash],
+                                backref='origin_txs')
+
+    # The amount it's worth
+    amount = db.Column(db.Numeric)
+    # It's index in the previous tx. Used to query when trying to spend it
+    index = db.Column(db.SmallInteger, primary_key=True)
     #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    # Who get's to spend it? Will be null for unusual tx types
     dest_address = db.Column(db.String(64))
 
     # Point to the tx we spent this output in, or null if UTXO
     spend_tx_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
     spent_tx = db.relationship('Transaction', foreign_keys=[spend_tx_id],
                                backref='spent_txs')
-
-    # Where this Output was created at
-    origin_tx_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
-    origin_tx = db.relationship('Transaction', foreign_keys=[origin_tx_id],
-                                backref='origin_txs')
 
     @property
     def url_for(self):

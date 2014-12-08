@@ -1,8 +1,9 @@
 from flask import current_app
 from flask.ext.script import Manager
+from decimal import Decimal
 
 from lincoln import create_app, db, coinserv
-from lincoln.models import Block, Transaction
+from lincoln.models import Block, Transaction, Output
 
 import datetime
 
@@ -54,21 +55,40 @@ def sync():
                           height=curr_height,
                           ntime=datetime.datetime.utcfromtimestamp(block.nTime),
                           orphan=False,
-                          total_value=0.0,
+                          total_value=Decimal(0),
                           difficulty=block.difficulty,
-                          algo="x11",
-                          currency="LTC")
+                          algo=current_app.config['algo']['display'],
+                          currency=current_app.config['currency']['code'])
         db.session.add(block_obj)
 
         # all TX's in block are connectable; index
         for tx in block.vtx:
-            tx = Transaction(block=block_obj,
-                             txid=tx.GetHash())
-            db.session.add(tx)
-            current_app.logger.info("Found new tx {}".format(tx))
+            tx_obj = Transaction(block=block_obj,
+                                 txid=tx.GetHash())
+            db.session.add(tx_obj)
+            current_app.logger.info("Found new tx {}".format(tx_obj))
 
-            #for txin in enumerate(tx.vin):
-            #for txout in enumerate(tx.vout):
+            total_out = Decimal(0)
+            total_in = Decimal(0)
+
+            if not tx.is_coinbase():
+                for txin in tx.vin:
+                    obj = Output.query.filter_by(
+                        origin_tx_hash=txin.prevout.hash,
+                        index=txin.prevout.n).one()
+                    obj.spend_tx = tx_obj
+                    total_in += obj.amount
+
+            for i, txout in enumerate(tx.vout):
+                out_dec = Decimal(txout.nValue) / 100000000
+                block_obj.total_value += out_dec
+                total_out += out_dec
+
+                out = Output(origin_tx=tx_obj,
+                             index=i,
+                             amount=out_dec,
+                             dest_address="")
+                db.session.add(out)
 
         highest = block_obj
         db.session.commit()

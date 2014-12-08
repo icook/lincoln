@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="col-lg-10 col-lg-offset-1">
+  {% if transaction %}
+  {% set block = transaction.block %}
+  <h2>Transaction Details</h2>
+  <div class="panel panel-default" style="background:none;">
+    <div class="panel-heading">Network Details</div>
+    <div class="table-responsive">
+      <table class="table big-table table-striped table-hover">
+        <tbody>
+          <tr>
+            <th width="30%">Appeared</th>
+            <td data-sort-value="{{ block.timestamp }}">{{ block.ntime | human_date_utc }} ({{ block.ntime }} UTC)</td>
+          </tr>
+          <tr>
+            <th>Currency</th>
+            <td>{{ block.currency }}</td>
+          </tr>
+          <tr>
+            <th>Algorithm</th>
+            <td>{{ block.algo }}</td>
+          </tr>
+          <tr>
+            <th>Coinbase Value</th>
+            <td>{{ transaction.total_value | comma }} {{ transaction.currency }}</td>
+          </tr>
+          <tr>
+            <th>Transaction Hash</th>
+            <td><samp>{{ transaction.txid | bytes }}</samp></td>
+          </tr>
+          <tr>
+            <th>Found in</th>
+            <td><a href="/block/{{ block.hash | bytes }}">
+                  {{ block.currency }} #{{ block.height | comma }}
+                  (<samp>{{ block.hash | bytes }}</samp>)
+                </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="clearfix"></div>
+  {% else %}
+  <br>
+  <br>
+  <h3>No transaction by that identifier could be found in our database!</h3>
+  <br>
+  <br>
+  {% endif %}
+</div>
+
+<h3>Outputs Spent</h3>
+<div class="table-responsive col-lg-12">
+  <table class="table table-striped table-hover tablesorter blockTable">
+    <thead>
+      <tr>
+        <th>Index</th>
+        <th>Amount</th>
+        <th>Input Transaction</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for output in transaction.spent_txs %}
+    <tr>
+      <td>{{ output.index | comma }}</td>
+      <td>{{ output.amount | currency }}</td>
+      <a href="/transaction/{{ output.spent_tx.hash | bytes }}">{{ output.spent_tx.hash | bytes }}</a>
+    </tr>
+    {% else %}
+    <tr>
+      <th colspan="10">No outputs were spent in this transaction</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+<h3>Outputs Created</h3>
+<div class="table-responsive col-lg-12">
+  <table class="table table-striped table-hover tablesorter blockTable">
+    <thead>
+      <tr>
+        <th>Index</th>
+        <th>Amount</th>
+        <th>Spent in</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for output in transaction.origin_txs %}
+    <tr>
+      <td>{{ output.index | comma }}</td>
+      <td>{{ output.amount | currency }}</td>
+      <td>
+        {% if output.spent_tx %}
+        <a href="/transaction/{{ output.spent_tx.hash | bytes }}">{{ output.spent_tx.hash | bytes }}</a>
+        {% else %} -- {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <th colspan="10">No outputs were generated in this transaction</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
