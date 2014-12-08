@@ -1,13 +1,21 @@
 import os
 
-from flask import render_template, Blueprint, jsonify, send_from_directory
+from flask import render_template, Blueprint, jsonify, send_from_directory, current_app
 
 import bitcoin.core as core
+import bitcoin.base58 as base58
 
 from . import models as m
 from . import db, root
 
 main = Blueprint('main', __name__)
+
+
+@main.route('/address/<address>')
+def address(address):
+    pubkey_hash = base58.decode(address)
+    outputs = m.Output.query.filter_by(dest_address=pubkey_hash[1:-4])
+    return render_template('address.html', outputs=outputs, address=address)
 
 
 @main.route('/block/<hash>')

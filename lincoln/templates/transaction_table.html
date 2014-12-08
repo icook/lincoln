@@ -21,7 +21,7 @@
       <td>{{ transaction.total_out | currency }}</td>
       <td>
         {% if transaction.coinbase %}
-          --
+          <span class="label label-default">N/A</span>
         {% else %}
           {{ (transaction.total_in - transaction.total_out) | currency }}
         {% endif %}

@@ -1,0 +1,32 @@
+<div class="table-responsive col-lg-12">
+  <table class="table table-striped table-hover tablesorter blockTable">
+    <thead>
+      <tr>
+        <th>Index</th>
+        <th>Amount</th>
+        <th>Created In</th>
+        <th>Spent In</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for output in outputs %}
+    <tr>
+      <td>{{ output.index | comma }}</td>
+      <td>{{ output.amount | currency }}</td>
+      <td><a href="/transaction/{{ output.origin_tx.txid | bytes }}">{{ output.origin_tx.txid | bytes }}</a></td>
+      <td>
+        {% if output.spent_tx %}
+          <a href="/transaction/{{ output.spent_tx.txid | bytes }}">{{ output.spent_tx.txid | bytes }}</a>
+        {% else %}
+          <span class="label label-success">Unspent</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <th colspan="10">No outputs were spent in this transaction</th>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

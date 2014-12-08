@@ -51,59 +51,9 @@
 </div>
 
 <h3>Outputs Spent</h3>
-<div class="table-responsive col-lg-12">
-  <table class="table table-striped table-hover tablesorter blockTable">
-    <thead>
-      <tr>
-        <th>Index</th>
-        <th>Amount</th>
-        <th>Input Transaction</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for output in transaction.spent_txs %}
-    <tr>
-      <td>{{ output.index | comma }}</td>
-      <td>{{ output.amount | currency }}</td>
-      <a href="/transaction/{{ output.spent_tx.hash | bytes }}">{{ output.spent_tx.hash | bytes }}</a>
-    </tr>
-    {% else %}
-    <tr>
-      <th colspan="10">No outputs were spent in this transaction</th>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+{% set outputs = transaction.spent_txs %}
+{% include "output_table.html" %}
 <h3>Outputs Created</h3>
-<div class="table-responsive col-lg-12">
-  <table class="table table-striped table-hover tablesorter blockTable">
-    <thead>
-      <tr>
-        <th>Index</th>
-        <th>Amount</th>
-        <th>Address</th>
-        <th>Spent in</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for output in transaction.origin_txs %}
-    <tr>
-      <td>{{ output.index | comma }}</td>
-      <td>{{ output.amount | currency }}</td>
-      <td>{{ output.address_str }}</td>
-      <td>
-        {% if output.spent_tx %}
-        <a href="/transaction/{{ output.spent_tx.hash | bytes }}">{{ output.spent_tx.hash | bytes }}</a>
-        {% else %} -- {% endif %}
-      </td>
-    </tr>
-    {% else %}
-    <tr>
-      <th colspan="10">No outputs were generated in this transaction</th>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+{% set outputs = transaction.origin_txs %}
+{% include "output_table.html" %}
 {% endblock %}
