@@ -1,6 +1,7 @@
 from flask import current_app
 from flask.ext.script import Manager
 from decimal import Decimal
+from collections import deque
 
 from lincoln import create_app, db, coinserv
 from lincoln.models import Block, Transaction, Output
@@ -8,6 +9,7 @@ from lincoln.models import Block, Transaction, Output
 import bitcoin.core.script as op
 import bitcoin.core.serialize as serialize
 
+import time
 import datetime
 
 manager = Manager(create_app)
@@ -22,10 +24,20 @@ def init_db():
 
 @manager.command
 def sync():
-    # Info about height from current database
+    # Get the most recent block in our database
     highest = Block.query.order_by(Block.height.desc()).first()
+    highest_hash = coinserv.getblockhash(highest.height)
 
+    # This means the coinserver and local index are on different chains
+    #if highest_hash != highest.hash:
+
+    server_height = coinserv.getinfo()['blocks']
+    server_hash = coinserv.getblockhash(server_height)
+
+
+    block_times = deque([], maxlen=1000)
     while True:
+        t = time.time()
         if not highest:
             curr_height = 0
         else:
@@ -97,6 +109,17 @@ def sync():
 
         highest = block_obj
         db.session.commit()
+        block_times.append(time.time() - t)
+
+        # Display progress information
+        time_per = sum(block_times) / len(block_times)
+        time_remain = datetime.timedelta(
+            seconds=time_per * (server_height - curr_height))
+        current_app.logger.info(
+            "{:,}/{:,} {} estimated to catchup"
+            .format(curr_height, server_height, time_remain))
+
+    db.session.commit()
 
 
 manager.add_option('-c', '--config', default='/config.yml')
