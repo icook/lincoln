@@ -10,6 +10,7 @@
         <th>Difficulty</th>
         <th>Block Hash</th>
         <th>Blockheight</th>
+        <th>Total Out</th>
       </tr>
     </thead>
     <tbody>
@@ -19,6 +20,7 @@
       <td>{{ '{:,}'.format(block.difficulty | round(4)) }}</td>
       <td><a href="/block/{{ block.hash | bytes }}">{{ block.hash | bytes }}</a></td>
       <td>{{ '{:,}'.format(block.height) }}</td>
+      <td>{{ block.total_out | currency }}</td>
     </tr>
     {% else %}
     <tr>

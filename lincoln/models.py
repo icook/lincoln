@@ -16,16 +16,13 @@ class Block(base):
     # the hash of the block
     hash = db.Column(db.LargeBinary(64), unique=True)
     height = db.Column(db.Integer, nullable=False)
-    # When block was found
-    #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     # The actual internal timestamp on the block
     ntime = db.Column(db.DateTime, nullable=False)
     # Is block now orphaned?
     orphan = db.Column(db.Boolean, default=False)
-    # Block total value (includes transaction fees)
-    total_value = db.Column(db.Numeric)
-    # Associated transaction fees
-    transaction_fees = db.Column(db.Numeric)
+    # Cache of all transactions in and out
+    total_in = db.Column(db.Numeric)
+    total_out = db.Column(db.Numeric)
     # Difficulty of block when solved
     difficulty = db.Column(db.Float, nullable=False)
     # 3-8 letter code for the currency that was mined
@@ -48,12 +45,14 @@ class Block(base):
 class Transaction(base):
     id = db.Column(db.Integer, primary_key=True)
     txid = db.Column(db.LargeBinary(64), unique=True)
-    #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     network_fee = db.Column(db.Numeric)
     # Points to the main chain block that it's in, or null if in mempool
     block_id = db.Column(db.Integer, db.ForeignKey('block.id'))
     block = db.relationship('Block', foreign_keys=[block_id],
                             backref='transactions')
+    # Cache of all outputs in and out
+    total_in = db.Column(db.Numeric)
+    total_out = db.Column(db.Numeric)
 
     @property
     def url_for(self):
@@ -77,7 +76,6 @@ class Output(base):
     amount = db.Column(db.Numeric)
     # It's index in the previous tx. Used to query when trying to spend it
     index = db.Column(db.SmallInteger, primary_key=True)
-    #created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     # Who get's to spend it? Will be null for unusual tx types
     dest_address = db.Column(db.LargeBinary)

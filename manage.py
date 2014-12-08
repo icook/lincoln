@@ -59,7 +59,8 @@ def sync():
                           height=curr_height,
                           ntime=datetime.datetime.utcfromtimestamp(block.nTime),
                           orphan=False,
-                          total_value=Decimal(0),
+                          total_in=0,
+                          total_out=0,
                           difficulty=block.difficulty,
                           algo=current_app.config['algo']['display'],
                           currency=current_app.config['currency']['code'])
@@ -70,17 +71,15 @@ def sync():
         # all TX's in block are connectable; index
         for tx in block.vtx:
             tx_obj = Transaction(block=block_obj,
-                                 txid=tx.GetHash())
+                                 txid=tx.GetHash(),
+                                 total_in=0,
+                                 total_out=0)
             db.session.add(tx_obj)
             current_app.logger.info("Found new tx {}".format(tx_obj))
 
-            total_out = Decimal(0)
-            total_in = Decimal(0)
-
             for i, txout in enumerate(tx.vout):
                 out_dec = Decimal(txout.nValue) / 100000000
-                block_obj.total_value += out_dec
-                total_out += out_dec
+                tx_obj.total_out += out_dec
 
                 # Sloppy as hell destination address checking
                 # ------------------------------------------------
@@ -110,8 +109,10 @@ def sync():
                     obj = Output.query.filter_by(
                         origin_tx_hash=txin.prevout.hash,
                         index=txin.prevout.n).one()
-                    obj.spend_tx = tx_obj
-                    total_in += obj.amount
+                    tx_obj.total_in += obj.amount
+
+            block_obj.total_in += tx_obj.total_in
+            block_obj.total_out += tx_obj.total_out
 
         highest = block_obj
         db.session.commit()

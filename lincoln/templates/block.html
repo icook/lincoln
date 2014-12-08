@@ -21,8 +21,16 @@
             <td>{{ block.algo }}</td>
           </tr>
           <tr>
-            <th>Coinbase Value</th>
-            <td>{{ block.total_value | comma }} {{ block.currency }} (with %(fee)f in fees", fee=block.transaction_fees | comma) }})</td>
+            <th>Total Mining Reward</th>
+            <td>{{ (block.total_out - block.total_in) | comma }} {{ block.currency }}</td>
+          </tr>
+          <tr>
+            <th>Total In</th>
+            <td>{{ block.total_in | comma }} {{ block.currency }}</td>
+          </tr>
+          <tr>
+            <th>Total Out</th>
+            <td>{{ block.total_out | comma }} {{ block.currency }}</td>
           </tr>
           <tr>
             <th>Difficulty</th>
@@ -36,10 +44,13 @@
             <th>Blockheight</th>
             <td>{{ block.height | comma }}</td>
           </tr>
+          <tr>
+            <th>Transaction Count</th>
+            <td>{{ block.transactions | length }}</td>
+          </tr>
         </tbody>
       </table>
     </div>
-    <div class="clearfix"></div>
   {% else %}
   <br>
   <br>
