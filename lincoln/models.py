@@ -46,6 +46,7 @@ class Transaction(base):
     id = db.Column(db.Integer, primary_key=True)
     txid = db.Column(db.LargeBinary(64), unique=True)
     network_fee = db.Column(db.Numeric)
+    coinbase = db.Column(db.Boolean)
     # Points to the main chain block that it's in, or null if in mempool
     block_id = db.Column(db.Integer, db.ForeignKey('block.id'))
     block = db.relationship('Block', foreign_keys=[block_id],

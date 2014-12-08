@@ -110,6 +110,8 @@ def sync():
                         origin_tx_hash=txin.prevout.hash,
                         index=txin.prevout.n).one()
                     tx_obj.total_in += obj.amount
+            else:
+                tx_obj.coinbase = True
 
             block_obj.total_in += tx_obj.total_in
             block_obj.total_out += tx_obj.total_out
