@@ -2,10 +2,18 @@ import os
 
 from flask import render_template, Blueprint, jsonify, send_from_directory
 
+import bitcoin.core as core
+
 from . import models as m
 from . import db, root
 
 main = Blueprint('main', __name__)
+
+
+@main.route('/block/<hash>')
+def block(hash):
+    block = m.Block.query.filter_by(hash=core.lx(hash)).first()
+    return render_template('blocks.html', block=block)
 
 
 @main.route('/')
