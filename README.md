@@ -11,6 +11,9 @@ name). Design goals:
 **Lincoln is still very much under development, so keep in mind that things may
 be a bit bumpy. Several key features are still missing!**
 
+### [Demo](http://ltctest.ibcook.com)
+![Transaction View Screenshot](doc/screenshot.png)
+
 Stack
 -----
 
