@@ -23,7 +23,6 @@ redis_conn = LocalProxy(
 
 def create_app(log_level="INFO", config="config.yml"):
     app = Flask(__name__)
-    app.debug = True
     app.secret_key = 'test'
     app.config.from_object(__name__)
 
