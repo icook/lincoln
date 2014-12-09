@@ -1,4 +1,8 @@
-{% set title = "Block #" + block.height | comma %}
+{% if block %}
+  {% set title = "Block #" + block.height | comma %}
+{% else %}
+  {% set title = "Block Not Found" %}
+{% endif %}
 {% extends "base.html" %}
 {% block content %}
 <div class="col-lg-12">

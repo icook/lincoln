@@ -1,4 +1,8 @@
-{% set title = "Transaction " + transaction.txid | bytes %}
+{% if transaction %}
+  {% set title = "Transaction " + transaction.txid | bytes %}
+{% else %}
+  {% set title = "Transaction Not Found" %}
+{% endif %}
 {% extends "base.html" %}
 {% block content %}
 <div class="col-lg-12">
