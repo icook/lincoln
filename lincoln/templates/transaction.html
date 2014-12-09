@@ -51,10 +51,13 @@
   {% endif %}
 </div>
 
-<h3>Outputs Spent</h3>
+<h4>Outputs Spent</h4>
 {% set outputs = transaction.spent_txs %}
+{% set is_spend = True %}
 {% include "output_table.html" %}
-<h3>Outputs Created</h3>
+<h4>Outputs Created</h4>
+{% set is_spend = False %}
+{% set is_origin = True %}
 {% set outputs = transaction.origin_txs %}
 {% include "output_table.html" %}
 {% endblock %}
