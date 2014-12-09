@@ -62,5 +62,7 @@
 </div>
 <h3>Transactions</h3>
 {% set transactions = block.transactions %}
+{% set disable_height = True %}
+{% set disable_time = True %}
 {% include "transaction_table.html" %}
 {% endblock %}
