@@ -1,9 +1,9 @@
 {% set title = "Block #" + block.height | comma %}
 {% extends "base.html" %}
 {% block content %}
-<div class="col-lg-10 col-lg-offset-1">
+<div class="col-lg-12">
   {% if block %}
-  <h2>Block #{{ block.height | comma }}</h2>
+  <h3><i class="fa fa-cube text-primary"></i> Block #{{ block.height | comma }}</h3>
   <div class="panel panel-default" style="background:none;">
     <div class="panel-heading">Network Details</div>
     <div class="table-responsive">

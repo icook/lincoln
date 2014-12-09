@@ -1,10 +1,10 @@
 {% set title = "Transaction " + transaction.txid | bytes %}
 {% extends "base.html" %}
 {% block content %}
-<div class="col-lg-10 col-lg-offset-1">
+<div class="col-lg-12">
   {% if transaction %}
   {% set block = transaction.block %}
-  <h2>Transaction Details</h2>
+  <h3><i class="fa fa-exchange text-primary"></i> Transaction Details</h3>
   <div class="panel panel-default" style="background:none;">
     <div class="panel-heading">Network Details</div>
     <div class="table-responsive">
