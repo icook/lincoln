@@ -13,9 +13,6 @@
     <tr>
       <td>
         <a href="/transaction/{{ transaction.txid | bytes }}">{{ transaction.txid | bytes }}</a>
-        {% if transaction.coinbase %}
-          <span class="label label-primary">Coinbase</span>
-        {% endif %}
       </td>
       <td>{{ '{:,}'.format(transaction.block.height) }}</td>
       <td>{{ transaction.total_out | currency }}</td>

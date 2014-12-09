@@ -45,7 +45,7 @@ class Transaction(base):
     id = db.Column(db.Integer, primary_key=True)
     txid = db.Column(db.LargeBinary(64), unique=True)
     network_fee = db.Column(db.Numeric)
-    coinbase = db.Column(db.Boolean)
+    coinbase = db.Column(db.Boolean, default=False)
     # Points to the main chain block that it's in, or null if in mempool
     block_id = db.Column(db.Integer, db.ForeignKey('block.id'))
     block = db.relationship('Block', foreign_keys=[block_id],
@@ -67,6 +67,11 @@ class Transaction(base):
 
 
 class Output(base):
+    type_map_str = {0: "p2sh", 1: "p2pkh", 2: "p2pk", 3: "non-std"}
+    type_map_color = {0: "warning", 1: "danger", 2: "info", 3: "default"}
+    type_map_icon = {0: "&#xf084;", 1: "&#xf084;", 2: "&#xf0a3;", 3: "&#xf068;"}
+    type = db.Column(db.SmallInteger)
+
     # Where this Output was created at
     origin_tx_hash = db.Column(db.LargeBinary(64), db.ForeignKey('transaction.txid'), primary_key=True)
     origin_tx = db.relationship('Transaction', foreign_keys=[origin_tx_hash],
@@ -84,6 +89,18 @@ class Output(base):
     spend_tx_id = db.Column(db.Integer, db.ForeignKey('transaction.id'))
     spent_tx = db.relationship('Transaction', foreign_keys=[spend_tx_id],
                                backref='spent_txs')
+
+    @property
+    def type_icon(self):
+        return self.type_map_icon[self.type]
+
+    @property
+    def type_color(self):
+        return self.type_map_color[self.type]
+
+    @property
+    def type_str(self):
+        return self.type_map_str[self.type]
 
     @property
     def address_str(self):

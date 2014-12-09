@@ -26,7 +26,8 @@ def init_db():
 def sync():
     # Get the most recent block in our database
     highest = Block.query.order_by(Block.height.desc()).first()
-    highest_hash = coinserv.getblockhash(highest.height)
+    if highest:
+        highest_hash = coinserv.getblockhash(highest.height)
 
     # This means the coinserver and local index are on different chains
     #if highest_hash != highest.hash:
@@ -73,25 +74,35 @@ def sync():
 
                 # Sloppy as hell destination address checking
                 # ------------------------------------------------
-                scr = list(txout.scriptPubKey)
+                scr = []
+                try:
+                    scr = list(txout.scriptPubKey)
+                except op.CScriptTruncatedPushDataError:
+                    pass
+
+                out = Output(origin_tx=tx_obj,
+                             index=i,
+                             amount=out_dec)
                 # pay-to-pubkey-hash
-                address = None
                 if (len(scr) == 5 and
                         scr[0] == op.OP_DUP and
                         scr[1] == op.OP_HASH160 and
                         scr[3] == op.OP_EQUALVERIFY and
                         scr[4] == op.OP_CHECKSIG):
-                    address = scr[2]
+                    out.type = 1
+                    out.dest_address = scr[2]
+                elif (len(scr) == 3 and
+                      scr[0] == op.OP_HASH160 and
+                      scr[2] == op.OP_EQUAL):
+                    out.type = 0
+                    out.dest_address = scr[1]
                 elif len(scr) == 2 and scr[1] == op.OP_CHECKSIG:
-                    address = serialize.Hash160(scr[0])
+                    out.type = 2
+                    out.dest_address = serialize.Hash160(scr[0])
                 else:
+                    out.type = 3
                     current_app.logger.info("Unrecognized script {}"
                                             .format(scr))
-
-                out = Output(origin_tx=tx_obj,
-                             index=i,
-                             amount=out_dec,
-                             dest_address=address)
                 db.session.add(out)
             db.session.flush()
 

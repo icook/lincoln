@@ -2,6 +2,7 @@
   <table class="table table-striped table-hover tablesorter blockTable">
     <thead>
       <tr>
+        <th>Type</th>
         <th>Amount</th>
         <th>Payable Address</th>
         <th>Created In</th>
@@ -11,6 +12,9 @@
     <tbody>
     {% for output in outputs %}
     <tr>
+      <td><span class="label label-{{ output.type_color }}">
+          <i class="fa">{{ output.type_icon | safe }}</i> {{ output.type_str }}
+      </span></td>
       <td>{{ output.amount | currency }}</td>
       <td><a href="/address/{{ output.address_str }}">{{ output.address_str }}</a></td>
       <td><a href="/transaction/{{ output.origin_tx.txid | bytes }}">
