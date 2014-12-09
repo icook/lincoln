@@ -25,7 +25,12 @@
           <i class="fa">{{ output.type_icon | safe }}</i> {{ output.type_str }}
       </span></td>
       <td>{{ output.amount | currency }}</td>
-      <td><a href="/address/{{ output.address_str }}">{{ output.address_str }}</a></td>
+      <td>
+        {% if output.dest_address %}
+          <a href="/address/{{ output.address_str }}">{{ output.address_str }}</a></td>
+        {% else %}
+          Non-Standard Address
+        {% endif %}
       <td>
         {% if is_spend %}
           <i class="fa fa-angle-up"></i> &nbsp;This TX

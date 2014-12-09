@@ -105,11 +105,14 @@ class Output(base):
     @property
     def address_str(self):
         if self.dest_address:
+            if self.type == 0:
+                ver_idx = 1
+            else:
+                ver_idx = 0
             return base58.CBase58Data.from_bytes(
                 self.dest_address,
-                nVersion=current_app.config['currency']['address_version'][0])
-        else:
-            return "Unknown TX Type"
+                nVersion=current_app.config['currency']['address_version'][ver_idx])
+        return False
 
     @property
     def url_for(self):
