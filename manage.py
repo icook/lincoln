@@ -83,6 +83,7 @@ def sync():
                 out = Output(origin_tx=tx_obj,
                              index=i,
                              amount=out_dec)
+                db.session.add(out)
                 # pay-to-pubkey-hash
                 if (len(scr) == 5 and
                         scr[0] == op.OP_DUP and
@@ -103,7 +104,6 @@ def sync():
                     out.type = 3
                     current_app.logger.info("Unrecognized script {}"
                                             .format(scr))
-                db.session.add(out)
             db.session.flush()
 
             if not tx.is_coinbase():
@@ -111,6 +111,7 @@ def sync():
                     obj = Output.query.filter_by(
                         origin_tx_hash=txin.prevout.hash,
                         index=txin.prevout.n).one()
+                    obj.spent_tx = tx_obj
                     tx_obj.total_in += obj.amount
             else:
                 tx_obj.coinbase = True
