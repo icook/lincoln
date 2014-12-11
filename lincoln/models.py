@@ -29,6 +29,10 @@ class Block(base):
     # The hashing algorith mused to solve the block
     algo = db.Column(db.String, nullable=False)
 
+    __table_args__ = (
+        db.Index('blockheight', 'height'),
+    )
+
     @property
     def timestamp(self):
         return calendar.timegm(self.ntime.utctimetuple())
