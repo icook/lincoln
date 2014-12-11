@@ -6,6 +6,7 @@ import inspect
 
 from flask import Flask, current_app
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.migrate import Migrate
 from werkzeug.local import LocalProxy
 from bitcoin.rpc import Proxy
 from redis import Redis
@@ -30,6 +31,7 @@ def create_app(log_level="INFO", config="config.yml"):
     # inject all the yaml configs
     app.config.update(config_vars)
     db.init_app(app)
+    Migrate(app, db)
 
     # Setup redis
     redis_config = app.config.get('redis_conn', dict(type='live'))

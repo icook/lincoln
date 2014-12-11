@@ -1,5 +1,6 @@
 from flask import current_app
 from flask.ext.script import Manager
+from flask.ext.migrate import MigrateCommand
 from decimal import Decimal
 from collections import deque
 
@@ -13,6 +14,7 @@ import time
 import datetime
 
 manager = Manager(create_app)
+manager.add_command('db', MigrateCommand)
 
 
 @manager.command
