@@ -52,3 +52,14 @@ def favicon():
     return send_from_directory(
         os.path.join(root, 'static'),
         'favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+@main.route('/search/<query>')
+def search(query):
+    blob = core.lx(query)
+    
+    # Query for items
+    blocks = m.Block.query.filter(m.Block.hash.like(blob)).limit(10)
+    transactions = m.Transaction.query.filter(m.Transaction.txid.like(blob)).limit(10)
+    return render_template('search_results.html',
+                           blocks=blocks,
+                           transactions=transactions)

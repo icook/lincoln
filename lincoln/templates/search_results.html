@@ -1,0 +1,11 @@
+{% set title = "Search results" %}
+{% set page = "search_results" %}
+{% extends "base.html" %}
+{% block content %}
+<h3 style="margin-top:0px;"><i class="fa fa-search text-warning"></i> Search results</h3>
+<h5 style="margin-top:0px;"><i class="fa fa-cubes text-warning"></i> Blocks</h5>
+{% include "blocks_table.html" %}
+<h3 style="margin-top:0px;"><i class="fa fa-sitemap text-warning"></i> Transactions</h3>
+{% include "transaction_table.html" %}
+{% endblock %}
+
