@@ -41,6 +41,10 @@ class Block(base):
     def url_for(self):
         return "/block/{}".format(self.hash)
 
+    @property
+    def coinbase_value(self):
+        return self.total_out - self.total_in
+
     def __str__(self):
         return "<{} h:{} hsh:{}>".format(self.currency, self.height, core.b2lx(self.hash))
 

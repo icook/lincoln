@@ -26,8 +26,12 @@
             <td>{{ block.algo }}</td>
           </tr>
           <tr>
-            <th>Coinbase Value</th>
-            <td>{{ transaction.total_value | comma }} {{ transaction.currency }}</td>
+            <th>Coinbase Transaction</th>
+            <td>{{ transaction.coinbase }}</td>
+          </tr>
+          <tr>
+            <th>Total Value</th>
+            <td>{{ transaction.total_out | comma }} {{ block.currency }}</td>
           </tr>
           <tr>
             <th>Transaction Hash</th>

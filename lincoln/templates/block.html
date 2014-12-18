@@ -26,7 +26,7 @@
           </tr>
           <tr>
             <th>Total Mining Reward</th>
-            <td>{{ (block.total_out - block.total_in) | comma }} {{ block.currency }}</td>
+            <td>{{ block.coinbase_value | comma }} {{ block.currency }}</td>
           </tr>
           <tr>
             <th>Total In</th>
