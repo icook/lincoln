@@ -46,6 +46,8 @@ pip install -e .
 Now copy `example.yml` to `config.yml` and enter your RPC information.
 
 ``` bash
+# Initialize the database
+python manage.py init_db
 # To run the webserver
 python manage.py runserver
 # To sync the blockchain

@@ -15,5 +15,6 @@ itsdangerous==0.24
 lever==0.2.6
 psycopg2==2.5.2
 python-bitcoinlib==0.2.1
+redis==2.10.3
 
 ago==0.0.6
