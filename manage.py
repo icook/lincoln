@@ -114,15 +114,16 @@ def sync():
                           currency=current_app.config['currency']['code'])
         current_app.logger.info(
             "Syncing block {}".format(block_obj))
-        db.session.add(block_obj)
 
         # all TX's in block are connectable; index
+        txs = []
+        outputs = []
         for tx in block.vtx:
             tx_obj = Transaction(block=block_obj,
                                  txid=tx.GetHash(),
                                  total_in=0,
                                  total_out=0)
-            db.session.add(tx_obj)
+            txs.append(tx_obj)
             current_app.logger.info("Found new tx {}".format(tx_obj))
 
             for i, txout in enumerate(tx.vout):
@@ -140,7 +141,7 @@ def sync():
                 out = Output(origin_tx=tx_obj,
                              index=i,
                              amount=out_dec)
-                db.session.add(out)
+                outputs.append(out)
                 # pay-to-pubkey-hash
                 if (len(scr) == 5 and
                         scr[0] == op.OP_DUP and
@@ -177,6 +178,15 @@ def sync():
             block_obj.total_out += tx_obj.total_out
 
         highest = block_obj
+        # Insert them into the database
+        db.engine.execute("INSERT INTO `block` VALUES ({0}, {1}, {2}, {3}, {4}, {5}",
+                            **block_obj)
+        for out in outputs:
+            db.engine.execute("INSERT INTO `output` VALUES ({0}, {1}, {2}, {3}, {4}, {5}",
+                              **out)
+        for tx in txs:
+            db.engine.execute("INSERT INTO `transaction` VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}",
+                              **tx)
         db.session.commit()
         block_times.append(time.time() - t)
 
