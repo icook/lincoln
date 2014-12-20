@@ -19,9 +19,64 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def init_db():
-    db.session.commit()
-    db.drop_all()
-    db.create_all()
+    import logging
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    db.engine.execute("""
+DROP TABLE output;
+COMMIT;
+DROP TABLE "transaction";
+COMMIT;
+DROP TABLE block;
+COMMIT;
+
+CREATE TABLE block (
+	id INTEGER NOT NULL,
+	hash BLOB,
+	height INTEGER NOT NULL,
+	ntime DATETIME NOT NULL,
+	orphan BOOLEAN,
+	total_in VARCHAR,
+	total_out VARCHAR,
+	difficulty FLOAT NOT NULL,
+	currency VARCHAR NOT NULL,
+	algo VARCHAR NOT NULL,
+	PRIMARY KEY (id),
+	UNIQUE (hash),
+	CHECK (orphan IN (0, 1))
+)
+COMMIT;
+
+CREATE INDEX blockheight ON block (height)
+COMMIT;
+
+CREATE TABLE "transaction" (
+	id INTEGER NOT NULL,
+	txid BLOB,
+	network_fee VARCHAR,
+	coinbase BOOLEAN,
+	block_id INTEGER,
+	total_in VARCHAR,
+	total_out VARCHAR,
+	PRIMARY KEY (id),
+	UNIQUE (txid),
+	CHECK (coinbase IN (0, 1)),
+	FOREIGN KEY(block_id) REFERENCES block (id)
+)
+COMMIT;
+
+CREATE TABLE output (
+	type SMALLINT,
+	origin_tx_hash BLOB NOT NULL,
+	amount VARCHAR,
+	"index" SMALLINT NOT NULL,
+	dest_address BLOB,
+	spend_tx_id INTEGER,
+	PRIMARY KEY (origin_tx_hash, "index"),
+	FOREIGN KEY(origin_tx_hash) REFERENCES "transaction" (txid),
+	FOREIGN KEY(spend_tx_id) REFERENCES "transaction" (id)
+)
+COMMIT;
+""")
 
 
 @manager.command
