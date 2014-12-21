@@ -37,7 +37,6 @@ def sync():
     server_height = coinserv.getinfo()['blocks']
     server_hash = coinserv.getblockhash(server_height)
 
-
     block_times = deque([], maxlen=1000)
     while True:
         t = time.time()
@@ -45,7 +44,11 @@ def sync():
             curr_height = 0
         else:
             curr_height = highest.height + 1
-        curr_hash = coinserv.getblockhash(curr_height)
+
+        if curr_height > server_height:
+            break
+        else:
+            curr_hash = coinserv.getblockhash(curr_height)
 
         block = coinserv.getblock(curr_hash)
         block_obj = Block(hash=block.GetHash(),
