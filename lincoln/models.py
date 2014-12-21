@@ -38,15 +38,21 @@ class Block(base):
         return calendar.timegm(self.ntime.utctimetuple())
 
     @property
+    def hash_str(self):
+        return core.b2lx(self.hash)
+
+    @property
     def url_for(self):
-        return "/block/{}".format(self.hash)
+        return "/block/{}".format(self.hash_str)
 
     @property
     def coinbase_value(self):
         return self.total_out - self.total_in
 
     def __str__(self):
-        return "<{} h:{} hsh:{}>".format(self.currency, self.height, core.b2lx(self.hash))
+        return "<{} h:{} hsh:{}>".format(self.currency, self.height, self.hash_str)
+
+
 
 
 class Transaction(base):
@@ -62,16 +68,21 @@ class Transaction(base):
     total_in = db.Column(db.Numeric)
     total_out = db.Column(db.Numeric)
 
-    @property
-    def url_for(self):
-        return "/transaction/{}".format(self.txid)
 
     @property
     def timestamp(self):
         return calendar.timegm(self.created_at.utctimetuple())
 
+    @property
+    def hash_str(self):
+        return core.b2lx(self.txid)
+
+    @property
+    def url_for(self):
+        return "/transaction/{}".format(self.hash_str)
+
     def __str__(self):
-        return "<Transaction h:{}>".format(core.b2lx(self.txid))
+        return "<Transaction h:{}>".format(self.hash_str)
 
 
 class Output(base):
